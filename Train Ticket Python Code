@@ -1,0 +1,94 @@
+class TrainTicket:
+    def __init__(self, from_station, to_station, first_name, last_name, email, price, seat_section):
+        self.from_station = from_station
+        self.to_station = to_station
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.price = price
+        self.seat_section = seat_section
+
+class TrainTicketSystem:
+    def __init__(self):
+        self.tickets = {}
+        self.seat_allocations = {}
+
+    # API to purchase a ticket
+    def purchase_ticket(self, from_station, to_station, first_name, last_name, email, price, seat_section):
+        ticket = TrainTicket(from_station, to_station, first_name, last_name, email, price, seat_section)
+        self.tickets[email] = ticket
+
+        # Assign seat
+        seat = self.assign_seat(seat_section)
+        self.seat_allocations[email] = seat
+
+    # API to view receipt details for a user
+    def view_receipt(self, email):
+        return self.tickets.get(email)
+
+    # API to view users and their allocated seats by section
+    def view_seat_allocations(self, section):
+        section_allocations = {}
+        for email, seat in self.seat_allocations.items():
+            if seat.startswith(section):
+                section_allocations[email] = seat
+        return section_allocations
+
+    # API to remove a user from the train
+    def remove_user(self, email):
+        if email in self.tickets:
+            del self.tickets[email]
+        if email in self.seat_allocations:
+            del self.seat_allocations[email]
+
+    # API to modify a user's seat
+    def modify_seat(self, email, new_seat_section):
+        if email in self.tickets:
+            self.seat_allocations[email] = self.assign_seat(new_seat_section)
+
+    # Helper method to assign a seat in a section
+    def assign_seat(self, section):
+        # For simplicity, let's assume the seat allocation is done sequentially
+        next_seat = 1
+        if section == 'A':
+            return 'A' + str(next_seat)
+        elif section == 'B':
+            return 'B' + str(next_seat)
+        else:
+            return None
+
+# Sample usage
+ticket_system = TrainTicketSystem()
+
+# Purchase a ticket
+ticket_system.purchase_ticket("HYD", "BNG", "Shaik", "Nayaz", "shaik@example.com", 6.0, "A")
+
+# View receipt details
+ticket = ticket_system.view_receipt("shaik@example.com")
+if ticket:
+    print("Receipt details:")
+    print("From:", ticket.from_station)
+    print("To:", ticket.to_station)
+    print("User:", ticket.first_name, ticket.last_name, ",", ticket.email)
+    print("Price paid: $", ticket.price)
+    print("Seat section:", ticket.seat_section)
+
+# View users and their allocated seats by section
+print("\nUsers and their allocated seats in section A:")
+section_a_allocations = ticket_system.view_seat_allocations("A")
+for email, seat in section_a_allocations.items():
+    print("User:", email, ", Seat:", seat)
+
+# Remove a user
+ticket_system.remove_user("shaik@example.com")
+print("\nUser removed. Remaining users in section A:")
+section_a_allocations = ticket_system.view_seat_allocations("A")
+for email, seat in section_a_allocations.items():
+    print("User:", email, ", Seat:", seat)
+
+# Modify a user's seat
+ticket_system.modify_seat("shaik@example.com", "B")
+print("\nUser's seat modified. Remaining users in section B:")
+section_b_allocations = ticket_system.view_seat_allocations("B")
+for email, seat in section_b_allocations.items():
+    print("User:", email, ", Seat:", seat)
