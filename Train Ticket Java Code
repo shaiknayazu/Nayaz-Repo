@@ -105,10 +105,10 @@ public class TrainTicketSystem {
         TrainTicketSystem ticketSystem = new TrainTicketSystem();
 
         // Purchase a ticket
-        ticketSystem.purchaseTicket("London", "France", "John", "Doe", "john@example.com", 5.0, "A");
+        ticketSystem.purchaseTicket("HYD", "BNG", "Shaik", "Nayaz", "shaik@example.com", 6.0, "A");
 
         // View receipt details
-        TrainTicket ticket = ticketSystem.viewReceipt("john@example.com");
+        TrainTicket ticket = ticketSystem.viewReceipt("shaik@example.com");
         System.out.println("Receipt details:");
         System.out.println("From: " + ticket.getFrom());
         System.out.println("To: " + ticket.getTo());
@@ -124,7 +124,7 @@ public class TrainTicketSystem {
         }
 
         // Remove a user
-        ticketSystem.removeUser("john@example.com");
+        ticketSystem.removeUser("shaik@example.com");
         System.out.println("\nUser removed. Remaining users in section A:");
         sectionAAllocations = ticketSystem.viewSeatAllocations("A");
         for (Map.Entry<String, String> entry : sectionAAllocations.entrySet()) {
@@ -132,7 +132,7 @@ public class TrainTicketSystem {
         }
 
         // Modify a user's seat
-        ticketSystem.modifySeat("john@example.com", "B");
+        ticketSystem.modifySeat("shaik@example.com", "B");
         System.out.println("\nUser's seat modified. Remaining users in section B:");
         Map<String, String> sectionBAllocations = ticketSystem.viewSeatAllocations("B");
         for (Map.Entry<String, String> entry : sectionBAllocations.entrySet()) {
