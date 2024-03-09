@@ -1,0 +1,142 @@
+import java.util.HashMap;
+import java.util.Map;
+
+public class TrainTicket {
+    private String from;
+    private String to;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private double price;
+    private String seatSection;
+
+    public TrainTicket(String from, String to, String firstName, String lastName, String email, double price, String seatSection) {
+        this.from = from;
+        this.to = to;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.price = price;
+        this.seatSection = seatSection;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getSeatSection() {
+        return seatSection;
+    }
+}
+
+
+public class TrainTicketSystem {
+    private Map<String, TrainTicket> tickets = new HashMap<>();
+    private Map<String, String> seatAllocations = new HashMap<>();
+
+    // API to purchase a ticket
+    public void purchaseTicket(String from, String to, String firstName, String lastName, String email, double price, String seatSection) {
+        TrainTicket ticket = new TrainTicket(from, to, firstName, lastName, email, price, seatSection);
+        tickets.put(email, ticket);
+
+        // Assign seat
+        String seat = assignSeat(seatSection);
+        seatAllocations.put(email, seat);
+    }
+
+    // API to view receipt details for a user
+    public TrainTicket viewReceipt(String email) {
+        return tickets.get(email);
+    }
+
+    // API to view users and their allocated seats by section
+    public Map<String, String> viewSeatAllocations(String section) {
+        Map<String, String> sectionAllocations = new HashMap<>();
+        for (Map.Entry<String, String> entry : seatAllocations.entrySet()) {
+            if (entry.getValue().equals(section)) {
+                sectionAllocations.put(entry.getKey(), tickets.get(entry.getKey()).getSeatSection());
+            }
+        }
+        return sectionAllocations;
+    }
+
+    // API to remove a user from the train
+    public void removeUser(String email) {
+        tickets.remove(email);
+        seatAllocations.remove(email);
+    }
+
+    // API to modify a user's seat
+    public void modifySeat(String email, String newSeatSection) {
+        seatAllocations.put(email, newSeatSection);
+    }
+
+    // Helper method to assign a seat in a section
+    private String assignSeat(String section) {
+        // For simplicity, let's assume the seat allocation is done sequentially
+        int nextSeat = 1;
+        if (section.equals("A")) {
+            return "A" + nextSeat++;
+        } else if (section.equals("B")) {
+            return "B" + nextSeat++;
+        } else {
+            return null;
+        }
+    }
+
+    // Sample usage
+    public static void main(String[] args) {
+        TrainTicketSystem ticketSystem = new TrainTicketSystem();
+
+        // Purchase a ticket
+        ticketSystem.purchaseTicket("London", "France", "John", "Doe", "john@example.com", 5.0, "A");
+
+        // View receipt details
+        TrainTicket ticket = ticketSystem.viewReceipt("john@example.com");
+        System.out.println("Receipt details:");
+        System.out.println("From: " + ticket.getFrom());
+        System.out.println("To: " + ticket.getTo());
+        System.out.println("User: " + ticket.getFullName() + ", " + ticket.getEmail());
+        System.out.println("Price paid: $" + ticket.getPrice());
+        System.out.println("Seat section: " + ticket.getSeatSection());
+
+        // View users and their allocated seats by section
+        System.out.println("\nUsers and their allocated seats in section A:");
+        Map<String, String> sectionAAllocations = ticketSystem.viewSeatAllocations("A");
+        for (Map.Entry<String, String> entry : sectionAAllocations.entrySet()) {
+            System.out.println("User: " + entry.getKey() + ", Seat: " + entry.getValue());
+        }
+
+        // Remove a user
+        ticketSystem.removeUser("john@example.com");
+        System.out.println("\nUser removed. Remaining users in section A:");
+        sectionAAllocations = ticketSystem.viewSeatAllocations("A");
+        for (Map.Entry<String, String> entry : sectionAAllocations.entrySet()) {
+            System.out.println("User: " + entry.getKey() + ", Seat: " + entry.getValue());
+        }
+
+        // Modify a user's seat
+        ticketSystem.modifySeat("john@example.com", "B");
+        System.out.println("\nUser's seat modified. Remaining users in section B:");
+        Map<String, String> sectionBAllocations = ticketSystem.viewSeatAllocations("B");
+        for (Map.Entry<String, String> entry : sectionBAllocations.entrySet()) {
+            System.out.println("User: " + entry.getKey() + ", Seat: " + entry.getValue());
+        }
+    }
+}
